@@ -1,0 +1,4 @@
+interface:
+  display_name: "深绘价格排查"
+  short_description: "按上市计划表批量核查深绘各平台价格并生成标红结果表"
+  default_prompt: "Use $deepdraw-price-audit with a listing plan workbook and style codes to audit Deepdraw prices."
