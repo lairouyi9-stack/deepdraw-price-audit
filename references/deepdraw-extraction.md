@@ -2,7 +2,7 @@
 
 ## 可靠性原则
 
-深绘不同品类的字段编号和输入框名称前缀会变化。按页面标签、`data-field-name`、`data-sku-code` 和当前表头的 `data-option-id` 识别，不要把某个款的字段 ID 当成全局常量。
+深绘不同品类的字段编号和输入框名称前缀会变化。按页面标签、data-field-name、data-sku-code 和当前表头的 data-option-id 识别，不要把某个款的字段 ID 当成全局常量。
 
 每次进入编辑页后先确认：
 
@@ -13,21 +13,20 @@
 
 ## SKU 字段
 
-SKU 表通常为 `#skuContainer`。表头单元格含：
+SKU 表通常为 #skuContainer。表头单元格含：
 
-- `data-sku-code`：字段语义代码；
-- `data-option-id`：当前品类对应的字段编号。
+- data-sku-code：字段语义代码；
+- data-option-id：当前品类对应的字段编号。
 
 读取某字段时：
 
-1. 找到目标 `data-sku-code` 的表头；
-2. 取得其 `data-option-id`；
-3. 在 `#skuContainer` 内读取名称以 `_<optionId>` 结尾的文本输入框；
+1. 找到目标 data-sku-code 的表头；
+2. 取得其 data-option-id；
+3. 在 #skuContainer 中读取名称以 _<optionId> 结尾的文本输入框；
 4. 保存全部 SKU 值、SKU 数量、唯一值和空值数量。
 
 字段代码：
 
-```text
 PRICE
 RETAIL_PRICE
 TM_DISCOUNT_PRICE
@@ -53,30 +52,28 @@ HAOYK_ORIGINAL_PRICE
 HAOYK_SUPPLY_PRICE
 HAOYK_SETTLEMENT_PRICE
 WX_PRICE
-```
 
 ## 单值字段
 
-优先按 `input[data-field-name="字段名称"]` 读取：
+优先按 input[data-field-name="字段名称"] 读取：
 
 | JSON键 | 页面字段名称 |
 |---|---|
-| `douyinReferencePrice` | 抖音参考价 |
-| `tmallOutletDiscountPrice` | 奥莱店折扣价 |
-| `jdMarketPrice` | 京东市场价 |
-| `vipMarketPrice` | 唯品会市场价 |
-| `pddMarketPrice` | 商品市场价 |
-| `tmallCounterPrice` | 专柜价 |
+| douyinReferencePrice | 抖音参考价 |
+| tmallOutletDiscountPrice | 奥莱店折扣价 |
+| jdMarketPrice | 京东市场价 |
+| vipMarketPrice | 唯品会市场价 |
+| pddMarketPrice | 商品市场价 |
+| tmallCounterPrice | 专柜价 |
 
-商品价格通常为商品基本信息区的“商品价格/零售价”输入框。保存为 `singles.productPrice`。
+商品价格通常为商品基本信息区的“商品价格/零售价”输入框。保存为 singles.productPrice。
 
-1688 产品单价位于“价格区间”区域：取第一组“购买数量”和“产品单价”，分别保存为 `alibabaMinQty` 和 `alibabaUnitPrice`。如果字段区域尚未出现，继续等待动态加载；不要直接判为空。
+1688 产品单价位于“价格区间”区域：取第一组“购买数量”和“产品单价”，分别保存为 alibabaMinQty 和 alibabaUnitPrice。如果字段区域尚未出现，继续等待动态加载；不要直接判为空。
 
 ## 规范化 JSON
 
 报告脚本接受如下结构：
 
-```json
 [
   {
     "code": "208426108218",
@@ -93,9 +90,19 @@ WX_PRICE
       "vipMarketPrice": "",
       "pddMarketPrice": "239.9",
       "tmallCounterPrice": "10000"
-    }
+    },
+    "tagImagePrice": "239.9",
+    "washLabelPrice": null,
+    "tagImageCoverage": "吊牌图2张，已逐张查看",
+    "washLabelCoverage": "洗唛图1张，未识别到价格"
   }
 ]
-```
 
-字段未展示时可使用 `null`；字段存在但未填写时使用空字符串。两者在说明中应区分。
+字段未展示时可使用 null；字段存在但未填写时使用空字符串。两者在说明中应区分。
+
+## 吊牌图与洗唛图
+
+- 从当前款商品的素材/图片管理页查看吊牌图；逐张检查可见价格及款号，不能仅凭缩略图判断无价格。放大原图或打开预览确认小字。
+- 将读取到的吊牌图价格写入 tagImagePrice；检查范围/张数写入 tagImageCoverage。
+- 吊牌图无可读价格时，继续逐张查看洗唛图，并将洗唛价格写入 washLabelPrice、检查范围写入 washLabelCoverage。
+- 两类图片均无可读价格时，价格键填 null，覆盖范围仍如实记录。不要把洗唛价格冒充为吊牌图价格；按规则文件的回退逻辑判定及说明。
