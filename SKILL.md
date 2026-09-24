@@ -7,7 +7,7 @@ description: Audit Deepdraw product prices in bulk from a listing-plan workbook 
 
 输入只需要：
 
-1. 上市计划表 `.xlsx` 文件；
+1. 上市计划表 .xlsx 文件；
 2. 一个或多个待排查款号。
 
 运行环境还必须已有可用的深绘登录会话。若未登录，请用户在浏览器中完成登录后继续；不要索取账号、密码、Cookie 或令牌。
@@ -19,19 +19,14 @@ description: Audit Deepdraw product prices in bulk from a listing-plan workbook 
    - 吊牌价和产品线一致时，使用该值；
    - 存在冲突时，停止对该款作价格结论，在结果中明确标记“上市计划表数据冲突”，不要自行选择。
 3. 在已登录的深绘中逐款搜索并进入商品编辑页。确认页面款号等于当前款号后，再读取价格；不要沿用上一个商品页面的数据。
-4. 等待 SKU 表和平台字段完成动态加载。按字段语义读取，不要依赖某一个品类的固定字段 ID。详细方法见 [references/deepdraw-extraction.md](references/deepdraw-extraction.md)。
-5. 按 [references/rules-and-output.md](references/rules-and-output.md) 的 33 项规则核查。
-6. 将抓取结果保存为规范化 JSON，并运行：
+4. 等待 SKU 表和平台字段完成动态加载。按字段语义读取，不要依赖某一个品类的固定字段 ID。详细方法见 references/deepdraw-extraction.md。
+5. 按 references/rules-and-output.md 的 33 项规则核查。
+6. 检查深绘素材中的吊牌图价格；若吊牌图未识别到价格，继续查看洗唛图。洗唛图识别到与上市计划吊牌价一致的价格时，按图片价格核对通过，不因吊牌图未显示/未识别价格而报错。细则见 references/rules-and-output.md。
+7. 将抓取结果保存为规范化 JSON，并运行：
 
-   ```bash
-   python scripts/build_report.py \
-     --plan /path/to/上市计划表.xlsx \
-     --codes /path/to/款号.txt \
-     --actual /path/to/deepdraw_actual.json \
-     --output /path/to/价格排查结果.xlsx
-   ```
+   python scripts/build_report.py --plan /path/to/上市计划表.xlsx --codes /path/to/款号.txt --actual /path/to/deepdraw_actual.json --output /path/to/价格排查结果.xlsx
 
-7. 打开生成的 Excel 做最终检查：款号不能显示为科学计数法，错误行必须整行标红，产品线应位于款号后。
+8. 打开生成的 Excel 做最终检查：款号不能显示为科学计数法，错误行必须整行标红，产品线应位于款号后。
 
 ## 深绘查找与异常处理
 
@@ -45,6 +40,6 @@ description: Audit Deepdraw product prices in bulk from a listing-plan workbook 
 ## 交付
 
 - 默认输出一个 Excel 文件，不生成无关工作表。
-- 表头固定为：`序号、款号、产品线、平台/区域、检查字段、填写值、目标值/要求、覆盖范围、核查结果、说明`。
+- 表头固定为：序号、款号、产品线、平台/区域、检查字段、填写值、目标值/要求、覆盖范围、核查结果、说明。
 - 保留所有正确和错误项目；不要只输出异常。
 - 向用户简要汇报排查款数、正确项数、错误项数，并提供结果文件。
